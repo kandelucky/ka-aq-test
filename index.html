@@ -223,6 +223,7 @@ h2{font-size:22px;margin:28px 0 14px}
 
     <div class="btn-row">
       <button id="again" class="btn btn-secondary" type="button">თავიდან დაწყება</button>
+      <button id="share" class="btn btn-primary" type="button">გაზიარება (სურათი)</button>
       <button id="print" class="btn btn-secondary" type="button">ამობეჭდვა / PDF</button>
     </div>
   </section>
@@ -309,6 +310,7 @@ const KEY = "aq50-ka-v1";
 // ─────────── მდგომარეობა ───────────
 let answers = new Array(Q.length).fill(null);
 let i = 0;
+let last = null;
 
 const $ = id => document.getElementById(id);
 
@@ -415,6 +417,7 @@ function finish(demo){
     box.appendChild(row);
   });
 
+  last = {total, sub, b};
   if(!demo) clear();
   show("result");
 }
@@ -430,6 +433,107 @@ $("next").addEventListener("click", () => {
 });
 $("again").addEventListener("click", () => { answers = new Array(Q.length).fill(null); i = 0; clear(); show("intro"); $("resume").classList.add("hidden"); });
 $("print").addEventListener("click", () => window.print());
+$("share").addEventListener("click", shareImage);
+
+// ─────────── გაზიარება: შედეგი სურათად ───────────
+const SITE = "kandelucky.github.io/ka-aq-test";
+const FONT = '"Noto Sans Georgian","BPG Nino Mtavruli",Sylfaen,"Segoe UI",Arial,sans-serif';
+
+function wrap(ctx, text, maxW){
+  const lines = []; let line = "";
+  text.split(" ").forEach(w => {
+    const t = line ? line + " " + w : w;
+    if(ctx.measureText(t).width > maxW && line){ lines.push(line); line = w; }
+    else line = t;
+  });
+  if(line) lines.push(line);
+  return lines;
+}
+
+function drawResult(){
+  const W = 1080, P = 72, IW = W - 2*P;
+  const c = document.createElement("canvas");
+  const ctx = c.getContext("2d");
+  const ink = "#2e38a3", accent = "#42a6cf", soft = "#f0f9fc", line = "#cfe4ed", track = "#e5f6fb";
+
+  // ჯერ ვზომავთ სიმაღლეს, მერე ვხატავთ
+  function layout(draw){
+    let y = P;
+    const text = (str, size, weight, color, gap, align) => {
+      ctx.font = weight + " " + size + "px " + FONT;
+      ctx.fillStyle = color; ctx.textAlign = align || "left"; ctx.textBaseline = "top";
+      wrap(ctx, str, IW).forEach(l => { if(draw) ctx.fillText(l, align === "center" ? W/2 : P, y); y += size * 1.45; });
+      y += gap;
+    };
+    text("აუტიზმის სპექტრის კოეფიციენტი (AQ)", 34, "700", ink, 26, "center");
+    ctx.font = "700 150px " + FONT;
+    if(draw){ ctx.fillStyle = ink; ctx.textAlign = "center"; ctx.fillText(String(last.total), W/2, y); }
+    y += 160;
+    text("50-დან", 28, "400", "rgba(46,56,163,.7)", 26, "center");
+
+    // band
+    ctx.font = "700 32px " + FONT;
+    const bl = wrap(ctx, last.b[0], IW - 60);
+    const bh = bl.length * 46 + 40;
+    if(draw){
+      ctx.fillStyle = soft; ctx.strokeStyle = line; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(P, y, IW, bh, 24); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = ink; ctx.textAlign = "center";
+      bl.forEach((l, k) => ctx.fillText(l, W/2, y + 20 + k*46));
+    }
+    y += bh + 20;
+    text(last.b[1], 26, "400", "rgba(46,56,163,.8)", 40, "center");
+
+    text("ქვე-სკალები", 36, "700", ink, 4);
+    text("რაც უფრო სავსეა ზოლი, მით უფრო გამოხატულია აუტისტური ნიშნები ამ სფეროში.", 24, "400", "rgba(46,56,163,.75)", 26);
+
+    Object.keys(FACTORS).forEach(f => {
+      ctx.font = "600 29px " + FONT;
+      if(draw){
+        ctx.fillStyle = ink; ctx.textAlign = "left"; ctx.fillText(FACTORS[f][0], P, y);
+        ctx.textAlign = "right"; ctx.fillText(last.sub[f] + " / 10", W - P, y);
+      }
+      y += 46;
+      if(draw){
+        ctx.fillStyle = track; ctx.beginPath(); ctx.roundRect(P, y, IW, 18, 9); ctx.fill();
+        if(last.sub[f] > 0){ ctx.fillStyle = accent; ctx.beginPath(); ctx.roundRect(P, y, IW * last.sub[f] / 10, 18, 9); ctx.fill(); }
+      }
+      y += 30;
+      text(FACTORS[f][1], 23, "400", "rgba(46,56,163,.75)", 26);
+    });
+
+    y += 6;
+    if(draw){ ctx.strokeStyle = line; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(P, y); ctx.lineTo(W - P, y); ctx.stroke(); }
+    y += 24;
+    text("AQ დიაგნოზს არ სვამს.", 24, "700", ink, 2, "center");
+    text("გაიარე ტესტი: " + SITE, 24, "400", "rgba(46,56,163,.75)", 0, "center");
+    return y + P - 20;
+  }
+
+  c.width = W; c.height = 10;
+  const H = Math.ceil(layout(false));
+  c.width = W; c.height = H;
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H);
+  layout(true);
+  return c;
+}
+
+async function shareImage(){
+  if(!last) return;
+  try{ await Promise.all(["400","600","700"].map(w => document.fonts.load(w + ' 30px "Noto Sans Georgian"', "ა"))); }catch(e){}
+  const blob = await new Promise(r => drawResult().toBlob(r, "image/png"));
+  const file = new File([blob], "aq-" + last.total + ".png", {type:"image/png"});
+  const text = "ჩემი AQ ქულა: " + last.total + " / 50 — https://" + SITE + "/";
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file], text}); }catch(e){}
+    return;
+  }
+  // კომპიუტერზე: სურათი ჩამოიტვირთება
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = file.name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
 
 // ─────────── გაგრძელება ───────────
 (function init(){
