@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AQ — აუტიზმის სპექტრის კოეფიციენტი</title>
+<meta name="description" content="Autism Spectrum Quotient (AQ) — 50 დებულება, ქართულად. ანონიმური, უფასო, დიაგნოზს არ სვამს.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2e38a3; --accent:#42a6cf; --line:#cfe4ed;
+  --soft:#f0f9fc; --track:#e5f6fb; --page:#f7fbfd;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:24px 16px 64px; background:var(--page); color:var(--ink);
+  font-family:"Noto Sans Georgian","BPG Nino Mtavruli",Sylfaen,"Segoe UI",Arial,sans-serif;
+  line-height:1.5; -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:850px;margin:0 auto}
+.hidden{display:none!important}
+
+h1{font-size:30px;line-height:1.25;margin:0 0 6px;text-align:center}
+.sub{text-align:center;font-size:16px;opacity:.75;margin:0 0 26px}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:34px}
+.card + .card{margin-top:20px}
+
+.lead{font-size:18px;margin:0 0 16px}
+.meta{font-size:15px;opacity:.75;margin:0 0 8px}
+
+.btn{
+  appearance:none;border:0;border-radius:14px;padding:15px 27px;
+  font-family:inherit;font-size:17px;font-weight:700;cursor:pointer;
+}
+.btn:disabled{opacity:.38;cursor:default}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+
+.progress-text{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:17px}
+.progress-track{width:100%;height:12px;border-radius:999px;background:var(--track);overflow:hidden;margin-bottom:32px}
+.progress-bar{height:100%;background:var(--accent);border-radius:999px;transition:width .25s ease}
+
+/* კითხვის არე — ცალკე გამოყოფილი ველი */
+#question{
+  font-size:24px;line-height:1.4;font-weight:700;text-align:center;
+  background:var(--soft);border:1px solid var(--line);border-radius:16px;
+  padding:26px 22px;margin:0 0 34px;min-height:150px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* პასუხები (16Personalities-ის ნიმუშით): ვეთანხმები ◯ ○ · ○ ◯ არ ვეთანხმები
+   შუა წრე — ნეიტრალური, არჩევადი არ არის */
+.answer-row{display:flex;align-items:center;justify-content:center;gap:22px}
+.cap{font-size:17px;font-weight:700;min-width:120px}
+.cap.agree{color:var(--accent);text-align:right}
+.cap.disagree{color:var(--ink)}
+.caps-mobile{display:none}
+#options{display:flex;align-items:center;gap:22px}
+.dot{
+  position:relative;padding:0;border-radius:50%;background:#fff;cursor:pointer;
+  transition:transform .15s,background .15s;
+}
+.dot.big{width:56px;height:56px}
+.dot.mid{width:42px;height:42px}
+.dot.agree{border:3px solid var(--accent)}
+.dot.disagree{border:3px solid var(--ink)}
+.dot.agree:hover{background:rgba(66,166,207,.15)}
+.dot.disagree:hover{background:rgba(46,56,163,.12)}
+.dot.agree.picked{background:var(--accent)}
+.dot.disagree.picked{background:var(--ink)}
+.dot.picked::after{
+  content:"";position:absolute;left:50%;top:46%;width:28%;height:48%;
+  border:solid #fff;border-width:0 3px 3px 0;transform:translate(-50%,-50%) rotate(45deg);
+}
+.dot.neutral{width:30px;height:30px;border:3px solid #d5dbe2;background:#eef1f4;cursor:default}
+.hint{text-align:center;font-size:14px;opacity:.6;margin:18px 0 0}
+
+/* ინსტრუქცია შესავალში */
+.howto{margin:24px 0 8px;padding:20px 22px;border-radius:16px;background:var(--soft);border:1px solid var(--line)}
+.howto h3{margin:0 0 16px;font-size:18px}
+.legend{display:flex;justify-content:center;align-items:flex-start;gap:12px;margin-bottom:16px}
+.legend > div{display:grid;grid-template-rows:62px auto;justify-items:center;align-items:center;gap:6px;width:92px}
+.legend .dot{display:block;cursor:default}
+.legend small{font-size:13px;line-height:1.25;text-align:center;align-self:start}
+.howto ul{margin:0;padding-left:22px;font-size:15px}
+.howto li{margin-bottom:6px}
+
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:32px;gap:12px}
+
+.score-big{text-align:center;margin:6px 0 4px;font-size:74px;font-weight:700;line-height:1}
+.score-of{text-align:center;font-size:17px;opacity:.7;margin:0 0 20px}
+.band{
+  text-align:center;font-size:20px;font-weight:700;padding:16px 18px;
+  border-radius:16px;background:var(--soft);border:1px solid var(--line);margin-bottom:8px;
+}
+.band-note{text-align:center;font-size:16px;opacity:.8;margin:12px 0 0}
+
+h2{font-size:22px;margin:28px 0 14px}
+.sub-row{margin-bottom:16px}
+.sub-head{display:flex;justify-content:space-between;font-size:17px;font-weight:600;margin-bottom:6px}
+.sub-track{height:11px;border-radius:999px;background:var(--track);overflow:hidden}
+.sub-bar{height:100%;background:var(--accent);border-radius:999px}
+.sub-desc{font-size:15px;opacity:.75;margin:5px 0 0}
+
+.note{font-size:15px;opacity:.8}
+.note ul{margin:8px 0 0;padding-left:22px}
+.note li{margin-bottom:6px}
+.ref{font-size:14px;opacity:.6;text-align:center;margin-top:26px}
+.ref a{color:inherit}
+
+@media (max-width:700px){
+  body{padding:16px 12px 48px}
+  h1{font-size:24px}
+  .card{padding:22px 18px;border-radius:18px}
+  #question{font-size:21px}
+  #question{padding:20px 16px;min-height:130px}
+  .answer-row{flex-direction:column;gap:12px}
+  .answer-row > .cap{display:none}
+  .caps-mobile{display:flex;justify-content:space-between;width:100%;max-width:320px}
+  .cap{min-width:0;font-size:15px}
+  #options{gap:14px}
+  .dot.big{width:48px;height:48px}
+  .dot.mid{width:36px;height:36px}
+  .dot.neutral{width:24px;height:24px}
+  .howto{padding:16px 14px}
+  /* ტელეფონზე ლეგენდა სიად: წრე — წარწერა ერთ ხაზზე */
+  .legend{flex-direction:column;align-items:stretch;gap:10px}
+  .legend > div{grid-template-rows:none;grid-template-columns:52px 1fr;justify-items:center;width:auto;gap:12px}
+  .legend > .n{display:none}
+  .legend small{font-size:15px;text-align:left;justify-self:start;align-self:center}
+  .legend small br{display:none}
+  .score-big{font-size:60px}
+  .btn{padding:14px 20px;font-size:16px}
+}
+@media print{
+  body{background:#fff;padding:0}
+  .btn,.btn-row,.ref{display:none!important}
+  .card{border:0;padding:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>აუტიზმის სპექტრის კოეფიციენტი (AQ)</h1>
+  <p class="sub">50 დებულება · 10–20 წუთი · ანონიმური</p>
+
+  <!-- ─────────── შესავალი ─────────── -->
+  <section id="intro" class="card">
+    <p class="lead">წაიკითხეთ თითოეული დებულება და აირჩიეთ პასუხი, რომელიც ყველაზე უკეთ ასახავს თქვენს რეალურ გამოცდილებას და არა იმას, თუ როგორ ისურვებდით, რომ იყოს.</p>
+    <p class="meta">აქ არ არსებობს „სწორი“ ან „მცდარი“ პასუხები. ნუ იფიქრებთ დიდხანს — პირველივე ინტუიციური რეაქცია, როგორც წესი, ყველაზე ზუსტია.</p>
+
+    <div class="howto">
+      <h3>როგორ ვუპასუხოთ:</h3>
+      <div class="legend">
+        <div><span class="dot big agree"></span><small>სრულიად <br>ვეთანხმები</small></div>
+        <div><span class="dot mid agree"></span><small>ნაწილობრივ <br>ვეთანხმები</small></div>
+        <div class="n"><span class="dot neutral"></span><small>&nbsp;</small></div>
+        <div><span class="dot mid disagree"></span><small>ნაწილობრივ <br>არ ვეთანხმები</small></div>
+        <div><span class="dot big disagree"></span><small>საერთოდ <br>არ ვეთანხმები</small></div>
+      </div>
+      <ul>
+        <li>წაიკითხეთ დებულება და აირჩიეთ შესაბამისი წრე. რაც უფრო დიდია წრე, მით უფრო დარწმუნებული ხართ პასუხში.</li>
+        <li>„უკან“ ღილაკით კი ნებისმიერ დროს შეძლებთ დაბრუნებას და პასუხის შეცვლას.</li>
+        <li>ტესტი შეგიძლიათ შეწყვიტოთ ნებისმიერ დროს — დაბრუნებისას ტესტი იმავე ადგილიდან გაგრძელდება.</li>
+      </ul>
+    </div>
+    <p class="meta"><strong>ყურადღება: ეს ტესტი არ წარმოადგენს სამედიცინო დიაგნოზს.</strong></p>
+    <div class="btn-row">
+      <button id="start" class="btn btn-primary" type="button">დაწყება</button>
+      <button id="resume" class="btn btn-secondary hidden" type="button">გაგრძელება</button>
+    </div>
+  </section>
+
+  <!-- ─────────── კითხვარი ─────────── -->
+  <section id="test" class="card hidden">
+    <div class="progress-text">
+      <span>პროგრესი</span>
+      <span id="count">1 / 50</span>
+    </div>
+    <div class="progress-track"><div id="bar" class="progress-bar" style="width:2%"></div></div>
+
+    <div id="question"></div>
+    <div class="answer-row">
+      <span class="cap agree">ვეთანხმები</span>
+      <div id="options"></div>
+      <span class="cap disagree">არ ვეთანხმები</span>
+      <div class="caps-mobile"><span class="cap agree">ვეთანხმები</span><span class="cap disagree">არ ვეთანხმები</span></div>
+    </div>
+
+    <p class="hint">დიდი წრე — სრულიად · პატარა — ნაწილობრივ</p>
+
+    <div class="nav">
+      <button id="prev" class="btn btn-secondary" type="button" disabled>უკან</button>
+      <button id="next" class="btn btn-primary" type="button" disabled>შემდეგი</button>
+    </div>
+  </section>
+
+  <!-- ─────────── შედეგი ─────────── -->
+  <section id="result" class="card hidden">
+    <div class="score-big" id="total">0</div>
+    <p class="score-of">50-დან</p>
+    <div class="band" id="band"></div>
+    <p class="band-note" id="bandNote"></p>
+
+    <h2>ქვე-სკალები</h2>
+    <div id="subs"></div>
+
+    <h2>რას ნიშნავს ეს ქულა</h2>
+    <div class="note">
+      <ul>
+        <li>არა-აუტისტების საშუალო ქულა ≈ <strong>16</strong>, აუტისტების ≈ <strong>35</strong>.</li>
+        <li><strong>26+</strong> — სკრინინგის ზღვარი: ღირს უფრო ღრმად დაკვირვება.</li>
+        <li><strong>32+</strong> — კვლევებში გამოყენებული კლასიკური ზღვარი; აუტისტების დაახლოებით 80% ამ ზონაშია.</li>
+        <li>ზღვარი კვლევიდან კვლევამდე იცვლება. ზოგი აუტისტი 32-ზე დაბლა იწერს (განსაკუთრებით მასკინგის დროს), ზოგი არა-აუტისტი კი — ზემოთ.</li>
+        <li>ქულაზე გავლენას ახდენს ADHD, შფოთვა, გადაწვა და ტრავმაც.</li>
+      </ul>
+      <p style="margin-top:14px"><strong>AQ დიაგნოზს არ სვამს.</strong> ეს მხოლოდ ერთი ნაწილია სურათის — მნიშვნელობას იძენს მთელი ცხოვრების გამოცდილებასთან და სხვა კითხვარებთან ერთად.</p>
+    </div>
+
+    <div class="btn-row">
+      <button id="again" class="btn btn-secondary" type="button">თავიდან დაწყება</button>
+      <button id="print" class="btn btn-secondary" type="button">ამობეჭდვა / PDF</button>
+    </div>
+  </section>
+
+  <p class="ref">AQ: Baron-Cohen et&nbsp;al. (2001) · ქართული ვერსია</p>
+</div>
+
+<script>
+// ─────────── მონაცემები ───────────
+// d: 'a' = ქულა ეთანხმებაზე, 'd' = ქულა არ-ეთანხმებაზე
+// f: social | switch | detail | comm | imag
+const Q = [
+  ["მირჩევნია საქმეები სხვებთან ერთად ვაკეთო, ვიდრე მარტომ.","d","social"],
+  ["მირჩევნია საქმეები ყოველთვის ერთი და იმავე, ნაცნობი მეთოდით გავაკეთო.","a","switch"],
+  ["თუ რაიმეს ვიზუალურად წარმოდგენას ვცდილობ, ჩემთვის ძალიან ადვილია გონებაში სურათის შექმნა.","d","imag"],
+  ["ხშირად ისე ღრმად ვერთვები რაღაცაში, რომ გარშემო ყველაფერი მავიწყდება.","a","switch"],
+  ["ხშირად ვამჩნევ ისეთ სუსტ ხმებს, რომლებსაც სხვები ყურადღებას არ აქცევენ.","a","detail"],
+  ["ხშირად ვამჩნევ მანქანის საინტერესო სანომრე ნიშნებს ან მსგავსი ტიპის ტექსტურ სერიებს.","a","detail"],
+  ["სხვები ხშირად მეუბნებიან, რომ ის, რაც ვთქვი, იყო უხეშობა ან დამამცირებელი, თუმცა მე ეს არ მსურდა.","a","comm"],
+  ["როდესაც წიგნს ვკითხულობ, ადვილად წარმომიდგენია, როგორ გამოიყურებიან პერსონაჟები.","d","imag"],
+  ["ძალიან მაინტერესებს თარიღები.","a","detail"],
+  ["ჯგუფში ადვილად შემიძლია ერთდროულად რამდენიმე ადამიანის საუბარს მივადევნო თვალი.","d","switch"],
+  ["ადამიანებთან ურთიერთობები ჩემთვის მარტივია.","d","social"],
+  ["ვამჩნევ დეტალებს, რომლებსაც სხვები ვერ ამჩნევენ.","a","detail"],
+  ["მირჩევნია ბიბლიოთეკაში წავიდე, ვიდრე წვეულებაზე.","a","social"],
+  ["მიჭირს ისტორიების მოფიქრება ან შეთხზვა.","a","imag"],
+  ["ადამიანები უფრო მეტად მიზიდავენ, ვიდრე ნივთები ან საგნები.","d","social"],
+  ["როცა რაიმე მაინტერესებს, ძალიან ძლიერად ვერთვები და ვღიზიანდები, თუ ხელს მიშლიან და მისი გაგრძელება არ შემიძლია.","a","switch"],
+  ["სიამოვნებას მანიჭებს მსუბუქი და უბრალო საუბრები (small talk).","d","comm"],
+  ["როდესაც მე ვლაპარაკობ, სხვებს უჭირთ საუბარში ჩართვა.","a","comm"],
+  ["ძალიან მაინტერესებს რიცხვები.","a","detail"],
+  ["წიგნის კითხვისას მიჭირს პერსონაჟების განზრახვების ან მოტივების გაგება.","a","imag"],
+  ["მხატვრული ლიტერატურის კითხვა განსაკუთრებით არ მიყვარს.","a","imag"],
+  ["მიჭირს ახალი მეგობრების შეძენა.","a","social"],
+  ["მუდმივად ვამჩნევ კანონზომიერებებს (პატერნებს) ჩემს გარშემო არსებულ მოვლენებსა და ნივთებში.","a","detail"],
+  ["მირჩევნია თეატრში წავიდე, ვიდრე მუზეუმში.","d","imag"],
+  ["არ მაწუხებს, თუ ჩემი ყოველდღიური განრიგი ირღვევა.","d","switch"],
+  ["ხშირად არ ვიცი, როგორ გავაგრძელო საუბარი.","a","comm"],
+  ["ჩემთვის მარტივია იმის მიხვედრა, თუ რას გულისხმობს ადამიანი „სტრიქონებს შორის“ — ანუ როცა სათქმელს პირდაპირ არ ამბობს.","d","comm"],
+  ["ჩვეულებრივ, უფრო მეტ ყურადღებას ვაქცევ მთლიან სურათს, ვიდრე ცალკეულ დეტალებს.","d","detail"],
+  ["სატელეფონო ნომრების კარგად ვერ ვიმახსოვრებ.","d","detail"],
+  ["ჩვეულებრივ, ვერ ვამჩნევ მცირე ცვლილებებს გარემოში ან ადამიანის გარეგნობაში.","d","detail"],
+  ["შემიძლია მარტივად მივხვდე, როდის იწყებს ჩემი მსმენელი მოწყენას.","d","comm"],
+  ["ჩემთვის ადვილია ერთდროულად რამდენიმე საქმეზე ყურადღების გადანაწილება.","d","switch"],
+  ["ტელეფონზე საუბრისას მიჭირს მიხვედრა, როდის არის ჩემი ლაპარაკის ჯერი.","a","comm"],
+  ["სიამოვნებას მანიჭებს საქმეების სპონტანურად, დაუგეგმავად კეთება.","d","switch"],
+  ["ხშირად ყველაზე ბოლოს ვხვდები ხუმრობის აზრს.","a","comm"],
+  ["ადვილად ვხვდები, რას გრძნობს ან ფიქრობს ადამიანი, უბრალოდ მის სახეზე დაკვირვებით.","d","social"],
+  ["თუ საქმის კეთებისას ვინმემ შემაწყვეტინა, ძალიან ადვილად ვუბრუნდები იმას, რასაც ვაკეთებდი.","d","switch"],
+  ["მსუბუქი სოციალური საუბრები კარგად გამომდის.","d","comm"],
+  ["ადამიანები ხშირად მეუბნებიან, რომ ხშირად ვსაუბრობ ერთსა და იმავე თემაზე.","a","comm"],
+  ["როდესაც პატარა ვიყავი, მიყვარდა როლური და წარმოსახვითი თამაშები (მაგალითად, წარმოვიდგენდი რომ ვიყავი სხვა ადამიანი).","d","imag"],
+  ["მიყვარს საგნების, ნივთების ან ინფორმაციის შეგროვება და კატეგორიზაცია.","a","imag"],
+  ["მიჭირს წარმოვიდგინო, როგორი შეიძლება იყოს სხვის ადგილას ყოფნა.","a","imag"],
+  ["მიყვარს ნებისმიერი აქტივობის წინასწარ და გულმოდგინე დაგეგმვა.","a","switch"],
+  ["მომწონს ხალხმრავალი შეკრებები.","d","social"],
+  ["მიჭირს სხვა ადამიანების ნამდვილი განზრახვების მიხვედრა.","a","social"],
+  ["ახალი სიტუაციები ჩემში შფოთვასა და აფორიაქებას იწვევს.","a","switch"],
+  ["სიამოვნებას მანიჭებს ახალი ადამიანების გაცნობა.","d","social"],
+  ["კარგი დიპლომატი ვარ.","d","social"],
+  ["ადამიანების დაბადების დღეების თარიღებს კარგად ვერ ვიმახსოვრებ.","d","detail"],
+  ["ჩემთვის ძალიან ადვილია ბავშვებთან ერთად როლური/წარმოსახვითი თამაშების თამაში. (მაგალითად, მე ვარ რომელიმე მულტფილმის/წიგნის გმირი)","d","imag"]
+];
+
+// v: 0 სრულიად ვეთანხმები · 1 ნაწილობრივ ვეთანხმები · 2 ნაწილობრივ არ · 3 საერთოდ არ
+const OPTIONS = [
+  "სრულიად ვეთანხმები",
+  "ნაწილობრივ ვეთანხმები",
+  "ნაწილობრივ არ ვეთანხმები",
+  "საერთოდ არ ვეთანხმები"
+];
+
+const FACTORS = {
+  social: ["სოციალური უნარი","რამდენად მშვიდად და თავდაჯერებულად გრძნობ თავს სოციალურ სიტუაციებში."],
+  switch: ["ყურადღების გადართვა","რამდენად ადვილად ეგუები ცვლილებას და გადაინაცვლებ ერთი საქმიდან მეორეზე."],
+  detail: ["დეტალზე ყურადღება","რამდენად ძლიერად ამჩნევ დეტალებს, რიცხვებსა და კანონზომიერებებს."],
+  comm:   ["კომუნიკაცია","როგორ იგებ და იყენებ ენას — პირდაპირი მნიშვნელობა, ქვეტექსტი, ტონი."],
+  imag:   ["წარმოსახვა","როგორ ფიქრობ ჰიპოთეტურ და აბსტრაქტულ სიტუაციებზე, სხვისი პერსპექტივაზე."]
+};
+
+const KEY = "aq50-ka-v1";
+
+// ─────────── მდგომარეობა ───────────
+let answers = new Array(Q.length).fill(null);
+let i = 0;
+
+const $ = id => document.getElementById(id);
+
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify({a:answers,i:i})); }catch(e){}
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return null;
+    const d = JSON.parse(raw);
+    if(!d || !Array.isArray(d.a) || d.a.length !== Q.length) return null;
+    return d;
+  }catch(e){ return null; }
+}
+function clear(){ try{ localStorage.removeItem(KEY); }catch(e){} }
+
+function show(which){
+  ["intro","test","result"].forEach(s => $(s).classList.toggle("hidden", s !== which));
+  window.scrollTo(0,0);
+}
+
+// ─────────── კითხვის ჩვენება ───────────
+function render(){
+  $("count").textContent = (i+1) + " / " + Q.length;
+  $("bar").style.width = Math.round((i+1)/Q.length*100) + "%";
+  $("question").textContent = (i+1) + ". " + Q[i][0];
+
+  const box = $("options");
+  box.innerHTML = "";
+  const SIZE = ["big agree","mid agree","mid disagree","big disagree"];
+  OPTIONS.forEach((label, v) => {
+    if(v === 2){                                   // შუა წრე — ნეიტრალური, არ ირჩევა
+      const n = document.createElement("span");
+      n.className = "dot neutral";
+      n.setAttribute("aria-hidden", "true");
+      box.appendChild(n);
+    }
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "dot " + SIZE[v] + (answers[i] === v ? " picked" : "");
+    b.dataset.v = v;
+    b.title = label;
+    b.setAttribute("aria-label", label);
+    b.addEventListener("click", () => pick(v));
+    box.appendChild(b);
+  });
+
+  $("prev").disabled = i === 0;
+  $("next").disabled = answers[i] === null;
+  $("next").textContent = (i === Q.length-1) ? "შედეგი" : "შემდეგი";
+}
+
+// არჩევა → მოინიშნება; შემდეგ კითხვაზე „შემდეგი" ღილაკით
+function pick(v){
+  answers[i] = v;
+  save();
+  document.querySelectorAll("#options button.dot").forEach(d => d.classList.toggle("picked", +d.dataset.v === v));
+  $("next").disabled = false;
+}
+
+// ─────────── ქულის დათვლა ───────────
+function scored(v, dir){
+  // 0 მთლიანად ვეთანხმები · 1 ნაწილობრივ ვეთანხმები · 2 ნაწილობრივ არ · 3 მთლიანად არ
+  return dir === "a" ? (v <= 1 ? 1 : 0) : (v >= 2 ? 1 : 0);
+}
+
+function band(total){
+  if(total >= 32) return ["ძალიან მაღალი — 32 და ზემოთ",
+    "კვლევებში გამოყენებული კლასიკური ზღვარია. აუტისტების დაახლოებით 80% ამ ზონაშია."];
+  if(total >= 26) return ["აწეული — 26–31",
+    "სკრინინგის ზღვარზე ზემოთ. აუტისტური ნიშნები შესამჩნევია, თუმცა ეს დიაგნოზი არ არის."];
+  if(total >= 22) return ["საშუალოზე მაღალი — 22–25",
+    "ტიპურ საშუალოზე (≈16) მაღლა, მაგრამ სკრინინგის ზღვარს ქვემოთ."];
+  if(total >= 11) return ["ტიპური დიაპაზონი — 11–21",
+    "არა-აუტისტების საშუალო ქულა ≈ 16 — ეს ზონა ამ დიაპაზონშია."];
+  return ["დაბალი — 10 და ქვემოთ", "აუტისტური ნიშნები ძალიან ცოტაა."];
+}
+
+function finish(){
+  let total = 0;
+  const sub = {social:0, switch:0, detail:0, comm:0, imag:0};
+  answers.forEach((v, k) => {
+    if(v === null) return;
+    const p = scored(v, Q[k][1]);
+    total += p;
+    sub[Q[k][2]] += p;
+  });
+
+  $("total").textContent = total;
+  const b = band(total);
+  $("band").textContent = b[0];
+  $("bandNote").textContent = b[1];
+
+  const box = $("subs");
+  box.innerHTML = "";
+  Object.keys(FACTORS).forEach(f => {
+    const row = document.createElement("div");
+    row.className = "sub-row";
+    row.innerHTML =
+      '<div class="sub-head"><span>' + FACTORS[f][0] + '</span><span>' + sub[f] + ' / 10</span></div>' +
+      '<div class="sub-track"><div class="sub-bar" style="width:' + (sub[f]*10) + '%"></div></div>' +
+      '<p class="sub-desc">' + FACTORS[f][1] + '</p>';
+    box.appendChild(row);
+  });
+
+  clear();
+  show("result");
+}
+
+// ─────────── ღილაკები ───────────
+$("start").addEventListener("click", () => { answers = new Array(Q.length).fill(null); i = 0; clear(); render(); show("test"); });
+$("resume").addEventListener("click", () => { render(); show("test"); });
+$("prev").addEventListener("click", () => { if(i > 0){ i--; save(); render(); } });
+$("next").addEventListener("click", () => {
+  if(answers[i] === null) return;
+  if(i === Q.length-1){ finish(); return; }
+  i++; save(); render();
+});
+$("again").addEventListener("click", () => { answers = new Array(Q.length).fill(null); i = 0; clear(); show("intro"); $("resume").classList.add("hidden"); });
+$("print").addEventListener("click", () => window.print());
+
+// ─────────── გაგრძელება ───────────
+(function init(){
+  const d = load();
+  if(d && d.a.some(v => v !== null)){
+    answers = d.a;
+    i = Math.min(Math.max(0, d.i|0), Q.length-1);
+    const done = answers.filter(v => v !== null).length;
+    const r = $("resume");
+    r.textContent = "გაგრძელება (" + done + " / " + Q.length + ")";
+    r.classList.remove("hidden");
+  }
+})();
+</script>
+</body>
+</html>
